@@ -47,6 +47,3 @@ fi
 # open VS Code for this extension
 cd "$HOME/mediawiki/extensions/$extensionName" || exit
 code .
-
-# cd to the extension's directory. for easy `git review`ing
-cd "$HOME/mediawiki/extensions/$extensionName" || exit
