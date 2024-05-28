@@ -1,0 +1,24 @@
+https://www.mediawiki.org/wiki/Manual:Coding_conventions/Lua#Naming_conventions
+
+Define the entry method as simply unpacking the parameters from the frame, and then passing those through a function with the same name prefixed with a single underscore. This can be disregarded if the function is only useful from wikitext, or if it needs a frame for something other than its arguments.
+
+In the standard library, function names consisting of multiple words are simply put together (e.g. setmetatable). Note that camelCase is the preferred way to name functions, in order to avoid potential garden-path function names.
+
+	-- See https://en.wikipedia.org/w/index.php?oldid=540791109 for code
+
+	local p = {}
+
+	function p._url(url, text)
+		-- Code goes here
+	end
+
+	function p.url(frame)
+		-- Take parameters out of the frame and pass them to p._url(). Return the result.
+		-- Adapt the below code to your specific template arguments
+		local templateArgs = frame.args
+		local url = templateArgs[1] or ''
+		local text = templateArgs[2] or ''
+		return p._url(url, text)
+	end
+
+	return p

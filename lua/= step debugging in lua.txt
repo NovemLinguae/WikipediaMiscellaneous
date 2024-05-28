@@ -1,0 +1,6 @@
+- Download and install ZeroBrane Studio
+- Paste your Wikipedia lua code into a file
+- At the bottom, comment out --return p
+- At the bottom, add:
+	frame = {args = {1 = 'unnamed param 1', 2 = 'unnamed param 2', namedParam = 'namedParam'}}
+	print(p.functionToCall(frame))
