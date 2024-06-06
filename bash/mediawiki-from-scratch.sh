@@ -22,7 +22,7 @@ fi
 
 # use node version 18. wikimedia currently uses this version
 export NVM_DIR=$HOME/.nvm;
-source $NVM_DIR/nvm.sh;
+source "$NVM_DIR/nvm.sh";
 nvm use 18
 
 # save password for this session. will prevent shell constantly asking the user for it
@@ -94,7 +94,7 @@ npm ci
 # mediawiki core: do initial database creation and initial LocalSettings.php file creation
 source ~/mediawiki/.env # import .env variables. else we can't see their values
 cd ~/mediawiki || exit
-docker compose exec mediawiki php maintenance/run.php install --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass ${MEDIAWIKI_PASSWORD} mediawiki ${MEDIAWIKI_USER}
+docker compose exec mediawiki php maintenance/run.php install --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" mediawiki "${MEDIAWIKI_USER}"
 
 # mediawiki core: append some settings to LocalSettings.php configuration file
 sudo tee -a ~/mediawiki/LocalSettings.php << EOL
@@ -157,15 +157,15 @@ cat > ~/mediawiki/.vscode/launch.json << EOF
 			"hostname": "0.0.0.0",
 			"port": 9003,
 			"pathMappings": {
-			  "/var/www/html/w": "${workspaceFolder}"
+			  "/var/www/html/w": "\${workspaceFolder}"
 			}
 		},
 		{
 			"name": "Launch currently open script",
 			"type": "php",
 			"request": "launch",
-			"program": "${file}",
-			"cwd": "${fileDirname}",
+			"program": "\${file}",
+			"cwd": "\${fileDirname}",
 			"port": 9003
 		}
 	]
