@@ -94,7 +94,7 @@ npm ci
 # mediawiki core: do initial database creation and initial LocalSettings.php file creation
 source ~/mediawiki/.env # import .env variables. else we can't see their values
 cd ~/mediawiki || exit
-docker compose exec mediawiki php maintenance/run.php install --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" mediawiki "${MEDIAWIKI_USER}"
+docker compose exec mediawiki php maintenance/run.php install --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" Wikipedia "${MEDIAWIKI_USER}"
 
 # mediawiki core: append some settings to LocalSettings.php configuration file
 sudo tee -a ~/mediawiki/LocalSettings.php << EOL
