@@ -8,9 +8,10 @@
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
-extensions=("PageTriage" "Echo" "WikiLove" "ORES")
+extensions=("EventLogging" "CollaborationKit") # "PageTriage" "Echo" "WikiLove" "ORES"
 skins=("Vector")
 sshUsername="novemlinguae"
+branch="REL1_39" # "master" "REL1_42"
 # *************************************************************************
 
 # docker: make sure docker engine is running
@@ -41,7 +42,7 @@ sudo rm -rfv ~/mediawiki
 # mediawiki core: download files
 # docker: download files (e.g. docker-compose.yml)
 cd ~/ || exit
-git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/core" ~/mediawiki
+git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/core" ~/mediawiki
 
 # docker: create .env file
 cat > ~/mediawiki/.env << EOF
@@ -94,7 +95,8 @@ npm ci
 # mediawiki core: do initial database creation and initial LocalSettings.php file creation
 source ~/mediawiki/.env # import .env variables. else we can't see their values
 cd ~/mediawiki || exit
-docker compose exec mediawiki php maintenance/run.php install --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" Wikipedia "${MEDIAWIKI_USER}"
+# don't switch this to maintenance/run.php. need to stay compatible with old MW versions
+docker compose exec mediawiki php maintenance/install.php --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" Wikipedia "${MEDIAWIKI_USER}"
 
 # mediawiki core: append some settings to LocalSettings.php configuration file
 sudo tee -a ~/mediawiki/LocalSettings.php << EOL
@@ -178,7 +180,7 @@ chmod 0777 ~/mediawiki/images
 # install extensions
 for extensionName in "${extensions[@]}"; do
   cd ~/mediawiki/extensions || exit
-  git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
+  git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
   docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
   cd "$extensionName" || exit
   npm ci
@@ -192,7 +194,7 @@ done
 # install skins
 for skinName in "${skins[@]}"; do
   cd ~/mediawiki/skins || exit
-  git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/skins/$skinName"
+  git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/skins/$skinName"
   docker compose exec mediawiki composer update --working-dir "skins/$skinName"
   cd "$skinName" || exit
   npm ci
@@ -205,4 +207,5 @@ done
 
 # run database update
 cd ~/mediawiki || exit
-docker compose exec mediawiki php maintenance/run.php update
+# don't switch this to maintenance/run.php. need to stay compatible with old MW versions
+docker compose exec mediawiki php maintenance/update.php
