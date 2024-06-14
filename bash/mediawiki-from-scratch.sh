@@ -11,6 +11,7 @@
 extensions=("EventLogging" "CollaborationKit") # "PageTriage" "Echo" "WikiLove" "ORES"
 skins=("Vector")
 sshUsername="novemlinguae"
+ubuntuUsername="novemlinguae"
 branch="REL1_39" # "master" "REL1_42"
 # *************************************************************************
 
@@ -209,3 +210,6 @@ done
 cd ~/mediawiki || exit
 # don't switch this to maintenance/run.php. need to stay compatible with old MW versions
 docker compose exec mediawiki php maintenance/update.php
+
+# install script saves some files as root for some reason. this is annoying when trying to edit files in Windows Notepad++ (won't let you save). set them as owned by local user instead.
+sudo chown -R $ubuntuUsername:$ubuntuUsername ~/mediawiki
