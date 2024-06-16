@@ -12,7 +12,7 @@ extensions=("EventLogging" "CollaborationKit") # "PageTriage" "Echo" "WikiLove" 
 skins=("Vector")
 sshUsername="novemlinguae"
 ubuntuUsername="novemlinguae"
-branch="REL1_39" # "master" "REL1_42"
+branch="master" # "master" "REL1_42"
 # *************************************************************************
 
 # docker: make sure docker engine is running
@@ -81,7 +81,7 @@ volumes:
     driver: local
 EOF
 
-# start Docker
+# start Docker, using the Dockerfile in that version of MediaWiki
 cd ~/mediawiki || exit
 docker compose up -d
 
