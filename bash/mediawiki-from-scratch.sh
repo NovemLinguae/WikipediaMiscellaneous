@@ -141,6 +141,11 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 	'draftquality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'types' => [ 1 ] ]
 ];
 
+\$wgGroupPermissions['sysop']['securepoll-create-poll'] = true;
+\$wgGroupPermissions['electionadmin']['securepoll-view-voter-pii'] = true;
+\$wgSecurePollSingleTransferableVoteEnabled = true;
+\$wgSecurePollUseLogging = true;
+
 // ***************** EXTENSIONS & SKINS ********************
 EOL
 
