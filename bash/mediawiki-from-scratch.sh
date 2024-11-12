@@ -146,6 +146,15 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 \$wgSecurePollSingleTransferableVoteEnabled = true;
 \$wgSecurePollUseLogging = true;
 
+// Turn off all caches. Very annoying to debug when stuff is getting cached. This overrides the cache setting on line 79.
+\$wgMainCacheType = CACHE_NONE;
+\$wgMessageCacheType = CACHE_NONE;
+\$wgParserCacheType = CACHE_NONE;
+\$wgResourceLoaderMaxage = [
+  'versioned' => 0,
+  'unversioned' => 0
+];
+
 // ***************** EXTENSIONS & SKINS ********************
 EOL
 
