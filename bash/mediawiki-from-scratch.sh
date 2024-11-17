@@ -8,7 +8,7 @@
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
-extensions=("EventLogging" "CollaborationKit") # "PageTriage" "Echo" "WikiLove" "ORES"
+extensions=("PageTriage" "Echo" "WikiLove" "ORES" "FlaggedRevs" "SecurePoll")
 skins=("Vector")
 sshUsername="novemlinguae"
 ubuntuUsername="novemlinguae"
