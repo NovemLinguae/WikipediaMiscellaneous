@@ -141,11 +141,6 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 	'draftquality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'types' => [ 1 ] ]
 ];
 
-\$wgGroupPermissions['sysop']['securepoll-create-poll'] = true;
-\$wgGroupPermissions['electionadmin']['securepoll-view-voter-pii'] = true;
-\$wgSecurePollSingleTransferableVoteEnabled = true;
-\$wgSecurePollUseLogging = true;
-
 // Turn off all caches. Very annoying to debug when stuff is getting cached. This overrides the cache setting on line 79.
 \$wgMainCacheType = CACHE_NONE;
 \$wgMessageCacheType = CACHE_NONE;
