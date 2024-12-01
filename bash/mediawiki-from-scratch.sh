@@ -155,7 +155,7 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 \$wgGroupPermissions['electionadmin']['securepoll-view-voter-pii'] = true;
 \$wgSecurePollSingleTransferableVoteEnabled = true;
 \$wgSecurePollUseLogging = true;
-// \$wgSecurePollUseNamespace = true; // commenting out since this is currently broken in localhost
+// \$wgSecurePollUseNamespace = true; // commenting out since this is currently broken in localhost. T381230. the error appears when creating a poll
 
 // ***************** EXTENSIONS & SKINS ********************
 EOL
