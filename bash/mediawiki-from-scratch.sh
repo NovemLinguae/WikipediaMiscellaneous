@@ -151,7 +151,7 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 ];
 
 \$wgGroupPermissions['electionadmin']['securepoll-create-poll'] = true;
-\$wgGroupPermissions['electionadmin']['securepoll-administrate-poll'] = true;
+\$wgGroupPermissions['electionadmin']['securepoll-edit-poll'] = true;
 \$wgGroupPermissions['electionadmin']['securepoll-view-voter-pii'] = true;
 \$wgSecurePollSingleTransferableVoteEnabled = true;
 \$wgSecurePollUseLogging = true;
