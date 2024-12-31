@@ -22,10 +22,10 @@ if [[ $dockerStatus =~ "could not be found" ]]; then
   exit 1
 fi
 
-# use node version 18. wikimedia currently uses this version
+# use node version 20. wikimedia currently uses this version
 export NVM_DIR=$HOME/.nvm;
 source "$NVM_DIR/nvm.sh";
-nvm use 18
+nvm use 20
 
 # save password for this session. will prevent shell constantly asking the user for it
 eval "$(ssh-agent -s)"
