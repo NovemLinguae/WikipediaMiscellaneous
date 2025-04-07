@@ -1,10 +1,13 @@
 #!/bin/bash
 
 # A script for developers to delete and recreate their localhost MediaWiki. Deletes and recreates core, extensions, and skins. Specify extensions and skins in the array below.
+
 # This script assumes:
 #    - Docker, WSL/Ubuntu, MariaDB not SQLite, installation location of MediaWiki core is ~/mediawiki, VS Code
+#    - Wiki farm. Will create wiki #1 at /wiki/, /w/, and database my_database. Will create wiki #2 at /secondwiki/, /w2/, and database secondwiki. Wiki farms are useful for testing extensions like CentralAuth, SecurePoll's jump-url feature, etc.
 #    - You should have git and nvm installed. `sudo apt install git`, `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash`, close and reopen bash window, `nvm install 18`
 #    - Your Gerrit SSH key should be saved at ~/.ssh/id_ed25519
+
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
@@ -13,6 +16,8 @@ skins=("Vector")
 sshUsername="novemlinguae"
 ubuntuUsername="novemlinguae"
 branch="master" # "master" "REL1_42"
+apacheImage="docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1" # this must stay in sync with what's in mediawiki/docker-compose.yml -> mediawiki-web -> image. else the wikifarm / second wiki might break.
+nodeVersion="20" # helpful to keep this in sync with Wikimedia CI. https://phabricator.wikimedia.org/T343827
 # *************************************************************************
 
 # docker: make sure docker engine is running
@@ -22,10 +27,10 @@ if [[ $dockerStatus =~ "could not be found" ]]; then
   exit 1
 fi
 
-# use node version 20. wikimedia currently uses this version
+# set node version
 export NVM_DIR=$HOME/.nvm;
 source "$NVM_DIR/nvm.sh";
-nvm use 20
+nvm use $nodeVersion
 
 # save password for this session. will prevent shell constantly asking the user for it
 eval "$(ssh-agent -s)"
@@ -62,7 +67,9 @@ MW_DOCKER_UID=
 MW_DOCKER_GID=
 EOF
 
-# docker: create MariaDB configuration file
+# docker: create MariaDB & wikifarm configuration file
+# https://www.mediawiki.org/wiki/MediaWiki-Docker/Configuration_recipes/Alternative_databases#MariaDB_(single_database_server)
+# https://www.mediawiki.org/wiki/MediaWiki-Docker/Configuration_recipes/Wiki_farm
 cat > ~/mediawiki/docker-compose.override.yml << EOF
 services:
   mariadb:
@@ -76,9 +83,33 @@ services:
       - MARIADB_DATABASE=my_database
     ports:
       - 3306:3306
+  mediawiki:
+    # On Linux, these lines ensure file ownership is set to your host user/group
+    user: "${MW_DOCKER_UID}:${MW_DOCKER_GID}"
+    volumes:
+      - ./:/var/www/html/w2:cached
+  mediawiki-web:
+    user: "${MW_DOCKER_UID}:${MW_DOCKER_GID}"
+    volumes:
+      - ./:/var/www/html/w2:cached
+    build:
+      context: ~/
+      dockerfile: Dockerfile
+  mediawiki-jobrunner:
+    volumes:
+      - ./:/var/www/html/w2:cached
 volumes:
   mariadbdata:
     driver: local
+EOF
+
+# docker: create wikifarm configuration file
+# https://www.mediawiki.org/wiki/MediaWiki-Docker/Configuration_recipes/Wiki_farm
+cat > ~/Dockerfile << EOF
+# Important: Make sure the version here matches the latest version of the mediawiki-web image in docker-compose.yml
+FROM $apacheImage
+
+RUN grep -q "secondwiki" /etc/apache2/sites-available/000-default.conf || sed -i '/RewriteEngine On/a RewriteRule ^/?secondwiki(/.*)?$ %{DOCUMENT_ROOT}/w2/index.php' /etc/apache2/sites-available/000-default.conf
 EOF
 
 # start Docker, using the Dockerfile in that version of MediaWiki
@@ -99,8 +130,142 @@ cd ~/mediawiki || exit
 # don't switch this to maintenance/run.php. need to stay compatible with old MW versions
 docker compose exec mediawiki php maintenance/install.php --dbname=my_database --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" Wikipedia "${MEDIAWIKI_USER}"
 
+# wiki farm: create 2nd database
+cd ~/mediawiki || exit
+docker compose exec mariadb mariadb -u root -proot_password -e "CREATE DATABASE secondwiki" || exit
+docker compose exec mariadb mariadb -u root -proot_password -e "GRANT ALL PRIVILEGES ON secondwiki.* TO 'my_user'@'%' IDENTIFIED BY 'my_password'; FLUSH PRIVILEGES;" || exit
+mv LocalSettings.php LocalSettings2.php || exit
+docker compose exec mediawiki php maintenance/install.php --dbname=secondwiki --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" Wikipedia "${MEDIAWIKI_USER}"
+rm -f LocalSettings.php
+mv LocalSettings2.php LocalSettings.php
+
+# wiki farm: create different SVG logos for each wiki
+cat > ~/mediawiki/resources/assets/change-your-logo-1.svg << EOF
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="135"
+   height="135"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="change-your-logo-1.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <rect
+     style="fill:#ffd42a;stroke-width:5.66929"
+     id="rect2"
+     width="128.11765"
+     height="128.51471"
+     x="3.5735295"
+     y="3.4411764" />
+  <text
+     x="67.897057"
+     y="43.691177"
+     text-anchor="middle"
+     dominant-baseline="middle"
+     font-family="Arial"
+     font-size="20px"
+     fill="#000000"
+     id="text2"><tspan
+       x="67.897057"
+       dy="24"
+       id="tspan2">Test Wiki #1</tspan></text>
+</svg>
+EOF
+cat > ~/mediawiki/resources/assets/change-your-logo-2.svg << EOF
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="135"
+   height="135"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="change-your-logo-2.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <rect
+     style="fill:#00ffff;stroke-width:5.66929"
+     id="rect2"
+     width="128.11765"
+     height="128.51471"
+     x="3.5735295"
+     y="3.4411764" />
+  <text
+     x="67.897057"
+     y="43.691177"
+     text-anchor="middle"
+     dominant-baseline="middle"
+     font-family="Arial"
+     font-size="20px"
+     fill="#000000"
+     id="text2"><tspan
+       x="67.897057"
+       dy="24"
+       id="tspan2">Test Wiki #2</tspan></text>
+</svg>
+EOF
+
 # mediawiki core: append some settings to LocalSettings.php configuration file
+# This overwrites some previously set settings. It is easier to append these settings to the bottom of the file, than to try to surgically edit the LocalSettings.php generated by the install script.
 sudo tee -a ~/mediawiki/LocalSettings.php << EOL
+// ***************** WIKI FARM CODE ********************
+
+// This maps URL paths to DB names. Note that we need to include both long and short URLs
+\$wikis = [
+   'wiki' => 'my_database',
+   'w' => 'my_database',
+   'secondwiki' => 'secondwiki',
+   'w2' => 'secondwiki',
+];
+if ( defined( 'MW_DB' ) ) {
+   // Automatically set from --wiki option to maintenance scripts.
+   \$wikiID = MW_DB;
+} else {
+   \$path = explode( '/', \$_SERVER['REQUEST_URI'] ?? '', 3 )[1] ?? '';
+   // Note that we are falling back to the main wiki for convenience. You could also throw an exception instead.
+   \$wikiID = \$_SERVER['MW_DB'] ?? \$wikis[ \$path ] ?? 'my_database';
+}
+
+/** @var SiteConfiguration \$wgConf */
+\$wgLocalDatabases = \$wgConf->wikis = array_values( array_unique( \$wikis ) );
+\$wgConf->suffixes = [ 'wiki' ];
+\$wgDBname = \$wikiID;
+
+// These are the only settings you will have to include here. Everything else is optional.
+\$wgConf->settings = [
+   'wgCanonicalServer' => [
+      'default' => 'http://localhost:8080'
+   ],
+   'wgArticlePath' => [
+      'my_database' => '/wiki/\$1',
+      'secondwiki' => '/secondwiki/\$1',
+   ],
+   'wgScriptPath' => [
+      'my_database' => '/w',
+      'secondwiki' => '/w2',
+   ],
+   'wgLogos' => [
+	  'my_database' => [
+		 '1x' => '/w/resources/assets/change-your-logo-1.svg',
+		 'icon' => '/w/resources/assets/change-your-logo-icon.svg',
+	  ],
+	  'secondwiki' => [
+		 '1x' => '/w2/resources/assets/change-your-logo-2.svg',
+		 'icon' => '/w2/resources/assets/change-your-logo-icon.svg',
+	  ],
+   ],
+];
+
+\$wgConfGlobals = \$wgConf->getAll( \$wgDBname );
+extract( \$wgConfGlobals );
+
+## The URL path to static resources (images, scripts, etc.)
+\$wgResourceBasePath = \$wgScriptPath;
+
 // ***************** EXTRA SETTINGS ********************
 
 \$wgMaxArticleSize = 2048; // default is 20, which is way too small
@@ -227,5 +392,11 @@ cd ~/mediawiki || exit
 # don't switch this to maintenance/run.php. need to stay compatible with old MW versions
 docker compose exec mediawiki php maintenance/update.php
 
+# wiki farm: run database update on second database
+cd ~/mediawiki || exit
+# don't switch this to maintenance/run.php. need to stay compatible with old MW versions
+docker compose exec mediawiki php maintenance/update.php --wiki secondwiki
+
 # install script saves some files as root for some reason. this is annoying when trying to edit files in Windows Notepad++ (won't let you save). set them as owned by local user instead.
 sudo chown -R $ubuntuUsername:$ubuntuUsername ~/mediawiki
+sudo chown $ubuntuUsername:$ubuntuUsername ~/Dockerfile
