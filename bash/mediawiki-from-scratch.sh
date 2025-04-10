@@ -140,7 +140,7 @@ rm -f LocalSettings.php
 mv LocalSettings2.php LocalSettings.php
 
 # wiki farm: create different SVG logos for each wiki
-cat > ~/mediawiki/resources/assets/change-your-logo-1.svg << EOF
+cat > ~/mediawiki/images/temp/change-your-logo-1.svg << EOF
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    width="135"
@@ -174,7 +174,7 @@ cat > ~/mediawiki/resources/assets/change-your-logo-1.svg << EOF
        id="tspan2">Test Wiki #1</tspan></text>
 </svg>
 EOF
-cat > ~/mediawiki/resources/assets/change-your-logo-2.svg << EOF
+cat > ~/mediawiki/images/temp/change-your-logo-2.svg << EOF
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    width="135"
@@ -250,11 +250,11 @@ if ( defined( 'MW_DB' ) ) {
    ],
    'wgLogos' => [
 	  'my_database' => [
-		 '1x' => '/w/resources/assets/change-your-logo-1.svg',
+		 '1x' => '/w/images/temp/change-your-logo-1.svg',
 		 'icon' => '/w/resources/assets/change-your-logo-icon.svg',
 	  ],
 	  'secondwiki' => [
-		 '1x' => '/w2/resources/assets/change-your-logo-2.svg',
+		 '1x' => '/w2/images/temp/change-your-logo-2.svg',
 		 'icon' => '/w2/resources/assets/change-your-logo-icon.svg',
 	  ],
    ],
