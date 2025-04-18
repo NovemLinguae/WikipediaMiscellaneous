@@ -318,7 +318,6 @@ extract( \$wgConfGlobals );
 \$wgGroupPermissions['electionadmin']['securepoll-create-poll'] = true;
 \$wgGroupPermissions['electionadmin']['securepoll-edit-poll'] = true;
 \$wgGroupPermissions['electionadmin']['securepoll-view-voter-pii'] = true;
-\$wgSecurePollSingleTransferableVoteEnabled = true;
 \$wgSecurePollUseLogging = true;
 // \$wgSecurePollUseNamespace = true; // commenting out since this is currently broken in localhost. T381230. the error appears when creating a poll
 
