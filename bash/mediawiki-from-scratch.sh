@@ -140,6 +140,7 @@ rm -f LocalSettings.php
 mv LocalSettings2.php LocalSettings.php
 
 # wiki farm: create different SVG logos for each wiki
+mkdir ~/mediawiki/images/temp
 cat > ~/mediawiki/images/temp/change-your-logo-1.svg << EOF
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
