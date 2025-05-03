@@ -391,12 +391,12 @@ done
 # run database update
 cd ~/mediawiki || exit
 # don't switch this to maintenance/run.php. need to stay compatible with old MW versions
-docker compose exec mediawiki php maintenance/update.php
+docker compose exec mediawiki php maintenance/update.php --quick
 
 # wiki farm: run database update on second database
 cd ~/mediawiki || exit
 # don't switch this to maintenance/run.php. need to stay compatible with old MW versions
-docker compose exec mediawiki php maintenance/update.php --wiki secondwiki
+docker compose exec mediawiki php maintenance/update.php --quick --wiki secondwiki
 
 # install script saves some files as root for some reason. this is annoying when trying to edit files in Windows Notepad++ (won't let you save). set them as owned by local user instead.
 sudo chown -R $ubuntuUsername:$ubuntuUsername ~/mediawiki
