@@ -274,6 +274,8 @@ extract( \$wgConfGlobals );
 \$wgGroupPermissions['autoreviewer']['autopatrol'] = true; // autoreviewed
 \$wgGroupPermissions['patroller']['patrol'] = true; // NPP
 \$wgGroupPermissions['sysop']['autopatrol'] = false; // to better match enwiki
+\$wgGroupPermissions['sysop']['deleterevision'] = true; // revision deletion
+\$wgGroupPermissions['sysop']['deletelogentry'] = true; // revision deletion
 
 // let sysop group (which doesn't have userrights permission) add and remove these groups
 \$wgAddGroups['sysop'][] = 'autoreviewer';
