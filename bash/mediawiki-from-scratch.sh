@@ -362,6 +362,9 @@ EOF
 # make uploads directory writeable
 chmod 0777 ~/mediawiki/images
 
+# make cache directory writeable. this will let mediawiki write detailed debug logs (mw-debug-web.log)
+chmod 0777 ~/mediawiki/cache
+
 # install extensions
 for extensionName in "${extensions[@]}"; do
   cd ~/mediawiki/extensions || exit
