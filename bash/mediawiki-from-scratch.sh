@@ -325,6 +325,8 @@ extract( \$wgConfGlobals );
 \$wgSecurePollEditOtherWikis = true;
 // \$wgSecurePollUseNamespace = true; // commenting out since this is currently broken in localhost. T381230. the error appears when creating a poll
 
+\$wgRCMaxAge = 30 * 24 * 60 * 60; // 30 days, to match enwiki. In seconds
+
 // ***************** EXTENSIONS & SKINS ********************
 EOL
 
