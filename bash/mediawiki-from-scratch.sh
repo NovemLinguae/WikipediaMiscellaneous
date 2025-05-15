@@ -138,7 +138,7 @@ docker compose exec mariadb mariadb -u root -proot_password -e "CREATE DATABASE 
 docker compose exec mariadb mariadb -u root -proot_password -e "GRANT ALL PRIVILEGES ON secondwiki.* TO 'my_user'@'%' IDENTIFIED BY 'my_password'; FLUSH PRIVILEGES;" || exit
 mv LocalSettings.php LocalSettings2.php || exit
 docker compose exec mediawiki php maintenance/install.php --dbname=secondwiki --dbuser=my_user --dbpass=my_password --dbserver=mariadb --server="${MW_SERVER}" --scriptpath="${MW_SCRIPT_PATH}" --lang en --pass "${MEDIAWIKI_PASSWORD}" Wikipedia "${MEDIAWIKI_USER}"
-rm -f LocalSettings.php
+sudo rm -f LocalSettings.php
 mv LocalSettings2.php LocalSettings.php
 
 # wiki farm: create different SVG logos for each wiki
