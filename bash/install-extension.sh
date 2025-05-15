@@ -14,7 +14,7 @@ read -r browser
 
 # git clone
 cd ~/mediawiki/extensions || exit
-git clone "ssh://novemlinguae@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
+git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/$extensionName"
 
 # make .vscode/settings.json file. so that when extension is open in IDE, intellisense loads type hints for objects from mediawiki core
 cd "$HOME/mediawiki/extensions/$extensionName" || exit
