@@ -11,7 +11,7 @@
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
-extensions=("PageTriage" "Echo" "WikiLove" "ORES" "FlaggedRevs" "SecurePoll")
+extensions=("PageTriage" "Echo" "WikiLove" "ORES" "FlaggedRevs" "SecurePoll" "VisualEditor")
 skins=("Vector")
 sshUsername="novemlinguae"
 ubuntuUsername="novemlinguae"
@@ -394,6 +394,10 @@ for skinName in "${skins[@]}"; do
   printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
   echo "wfLoadSkin( '$skinName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
 done
+
+# VisualEditor needs some extra stuff
+cd ~/mediawiki/extensions/VisualEditor || exit
+git submodule update --init
 
 # run database update
 cd ~/mediawiki || exit
