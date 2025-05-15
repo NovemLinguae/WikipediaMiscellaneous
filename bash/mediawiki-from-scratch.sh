@@ -409,6 +409,9 @@ cd ~/mediawiki || exit
 # don't switch this to maintenance/run.php. need to stay compatible with old MW versions
 docker compose exec mediawiki php maintenance/update.php --quick --wiki secondwiki
 
+# wiki farm: get rid of "the repository does not have correct ownership" yellow warning in CLI
+git config --global --add safe.directory /var/www/html/w
+
 # install script saves some files as root for some reason. this is annoying when trying to edit files in Windows Notepad++ (won't let you save). set them as owned by local user instead.
 sudo chown -R $ubuntuUsername:$ubuntuUsername ~/mediawiki
 sudo chown $ubuntuUsername:$ubuntuUsername ~/Dockerfile
