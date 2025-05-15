@@ -44,7 +44,7 @@ fi
 # delete files from previous installation
 sudo rm -rfv ~/mediawiki
 
-# wiki farm: get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
+# get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
 git config --global --add safe.directory /var/www/html/w
 
 # mediawiki core: download files
@@ -371,6 +371,9 @@ chmod 0777 ~/mediawiki/cache
 
 # install extensions
 for extensionName in "${extensions[@]}"; do
+  # get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
+  git config --global --add safe.directory /var/www/html/w/extensions/$extensionName
+
   cd ~/mediawiki/extensions || exit
   git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/extensions/$extensionName"
   docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
@@ -385,6 +388,9 @@ done
 
 # install skins
 for skinName in "${skins[@]}"; do
+  # get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
+  git config --global --add safe.directory /var/www/html/w/skins/$skinName
+
   cd ~/mediawiki/skins || exit
   git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/skins/$skinName"
   docker compose exec mediawiki composer update --working-dir "skins/$skinName"
