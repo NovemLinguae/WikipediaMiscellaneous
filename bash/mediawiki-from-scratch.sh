@@ -386,7 +386,7 @@ done
 # install skins
 for skinName in "${skins[@]}"; do
   cd ~/mediawiki/skins || exit
-  git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/extensions/$skinName"
+  git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/skins/$skinName"
   docker compose exec mediawiki composer update --working-dir "skins/$skinName"
   cd "$skinName" || exit
   npm ci
