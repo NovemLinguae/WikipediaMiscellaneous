@@ -13,6 +13,7 @@
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
 extensions=("PageTriage" "Echo" "WikiLove" "ORES" "FlaggedRevs" "SecurePoll" "VisualEditor")
 skins=("Vector")
+sshUsername="novemlinguae"
 ubuntuUsername="novemlinguae"
 branch="master" # "master" "REL1_42"
 apacheImage="docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1" # this must stay in sync with what's in mediawiki/docker-compose.yml -> mediawiki-web -> image. else the wikifarm / second wiki might break.
@@ -50,7 +51,7 @@ git config --global --add safe.directory /var/www/html/w
 # mediawiki core: download files
 # docker: download files (e.g. docker-compose.yml)
 cd ~/ || exit
-git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/core" ~/mediawiki
+git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/core" ~/mediawiki
 
 # docker: create .env file
 cat > ~/mediawiki/.env << EOF
@@ -375,7 +376,7 @@ for extensionName in "${extensions[@]}"; do
   git config --global --add safe.directory /var/www/html/w/extensions/$extensionName
 
   cd ~/mediawiki/extensions || exit
-  git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/extensions/$extensionName"
+  git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
   docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
   cd "$extensionName" || exit
   npm ci
@@ -392,7 +393,7 @@ for skinName in "${skins[@]}"; do
   git config --global --add safe.directory /var/www/html/w/skins/$skinName
 
   cd ~/mediawiki/skins || exit
-  git clone -b $branch "https://gerrit.wikimedia.org/r/mediawiki/skins/$skinName"
+  git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/skins/$skinName"
   docker compose exec mediawiki composer update --working-dir "skins/$skinName"
   cd "$skinName" || exit
   npm ci
