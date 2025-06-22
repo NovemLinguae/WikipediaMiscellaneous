@@ -330,6 +330,20 @@ extract( \$wgConfGlobals );
 
 \$wgRCMaxAge = 30 * 24 * 60 * 60; // 30 days, to match enwiki. In seconds
 
+// autoconfirmed and extendedconfirmed stuff
+\$wgAutopromote = [
+	'autoconfirmed' => [ '&',
+		[ APCOND_EDITCOUNT, 10 ],
+		[ APCOND_AGE, 4 ],
+	],
+	'extendedconfirmed' => [ '&',
+		[ APCOND_EDITCOUNT, 500 ],
+		[ APCOND_AGE, 30 ],
+	],
+];
+\$wgGroupPermissions['autoconfirmed']['editsemiprotected'] = true;
+\$wgGroupPermissions['extendedconfirmed']['extendedconfirmed'] = true;
+
 // ***************** EXTENSIONS & SKINS ********************
 EOL
 
