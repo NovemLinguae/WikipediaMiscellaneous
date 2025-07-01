@@ -327,6 +327,7 @@ extract( \$wgConfGlobals );
 \$wgSecurePollUseLogging = true;
 \$wgSecurePollEditOtherWikis = true;
 \$wgSecurePollUseNamespace = true;
+\$wgSecurePollShowErrorDetail=true;
 
 \$wgRCMaxAge = 30 * 24 * 60 * 60; // 30 days, to match enwiki. In seconds
 
