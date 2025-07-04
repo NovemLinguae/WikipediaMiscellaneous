@@ -329,7 +329,9 @@ extract( \$wgConfGlobals );
 \$wgSecurePollUseNamespace = true;
 \$wgSecurePollShowErrorDetail=true;
 
-\$wgRCMaxAge = 30 * 24 * 60 * 60; // 30 days, to match enwiki. In seconds
+// match enwiki
+\$wgNamespacesWithSubpages[NS_MEDIAWIKI] = false;
+\$wgRCMaxAge = 30 * 24 * 60 * 60; // 30 days
 
 // autoconfirmed and extendedconfirmed stuff
 \$wgAutopromote = [
