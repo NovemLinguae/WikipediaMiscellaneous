@@ -88,11 +88,12 @@ services:
       - 3306:3306
   mediawiki:
     # On Linux, these lines ensure file ownership is set to your host user/group
-    user: "${MW_DOCKER_UID}:${MW_DOCKER_GID}"
+    user: "\${MW_DOCKER_UID}:\${MW_DOCKER_GID}"
+	# On Linux, these lines ensure file ownership is set to your host user/group
     volumes:
       - ./:/var/www/html/w2:cached
   mediawiki-web:
-    user: "${MW_DOCKER_UID}:${MW_DOCKER_GID}"
+    user: "\${MW_DOCKER_UID}:\${MW_DOCKER_GID}"
     volumes:
       - ./:/var/www/html/w2:cached
     build:
