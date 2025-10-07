@@ -89,7 +89,7 @@ services:
   mediawiki:
     # On Linux, these lines ensure file ownership is set to your host user/group
     user: "\${MW_DOCKER_UID}:\${MW_DOCKER_GID}"
-	# On Linux, these lines ensure file ownership is set to your host user/group
+    # On Linux, these lines ensure file ownership is set to your host user/group
     volumes:
       - ./:/var/www/html/w2:cached
   mediawiki-web:
