@@ -34,7 +34,7 @@ nvm use $nodeVersion
 
 # save password for this session. will prevent shell constantly asking the user for it
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
+ssh-add ~/.ssh/cloud.key
 
 # docker: delete database (volume = mediawiki_mariadbdata)
 if [ -d "$HOME/mediawiki" ]; then
