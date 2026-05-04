@@ -310,7 +310,7 @@ extract( \$wgConfGlobals );
 \$wgOresWikiId = 'enwiki';
 \$wgOresModels = [
 	'articlequality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'cleanParent' => true ],
-	'draftquality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'types' => [ 1 ] ]
+	'draftquality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'sources' => [ 1 ] ]
 ];
 
 // Turn off all caches. Very annoying to debug when stuff is getting cached. This overrides the cache setting on line 79.
