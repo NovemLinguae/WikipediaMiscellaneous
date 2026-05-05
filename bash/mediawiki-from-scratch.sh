@@ -20,6 +20,9 @@ apacheImage="docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1" # this mu
 nodeVersion="20" # helpful to keep this in sync with Wikimedia CI. https://phabricator.wikimedia.org/T343827
 # *************************************************************************
 
+# Workaround for error message "The repository at "/var/www/html/w/skins/Vector" does not have the correct ownership and git refuses to use it:" and "fatal: detected dubious ownership in repository at '/var/www/html/w/skins/Vector'"
+git config --global --add safe.directory '*'
+
 # docker: make sure docker engine is running
 dockerStatus=$(docker --help)
 if [[ $dockerStatus =~ "could not be found" ]]; then
@@ -44,9 +47,6 @@ fi
 
 # delete files from previous installation
 sudo rm -rfv ~/mediawiki
-
-# get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
-git config --global --add safe.directory /var/www/html/w
 
 # mediawiki core: download files
 # docker: download files (e.g. docker-compose.yml)
