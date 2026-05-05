@@ -21,7 +21,8 @@ nodeVersion="20" # helpful to keep this in sync with Wikimedia CI. https://phabr
 # *************************************************************************
 
 # Workaround for error message "The repository at "/var/www/html/w/skins/Vector" does not have the correct ownership and git refuses to use it:" and "fatal: detected dubious ownership in repository at '/var/www/html/w/skins/Vector'"
-git config --global --add safe.directory '*'
+# Commenting this out because I'm still getting the yellow warning messages anyway. And even though it says "fatal error", it doesn't appear to be fatal.
+# git config --global --add safe.directory '*'
 
 # docker: make sure docker engine is running
 dockerStatus=$(docker --help)
