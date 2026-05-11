@@ -17,7 +17,7 @@ sshUsername="novemlinguae"
 ubuntuUsername="novemlinguae"
 branch="master" # "master" "REL1_42"
 apacheImage="docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1" # this must stay in sync with what's in mediawiki/docker-compose.yml -> mediawiki-web -> image. else the wikifarm / second wiki might break.
-nodeVersion="20" # helpful to keep this in sync with Wikimedia CI. https://phabricator.wikimedia.org/T343827
+nodeVersion="24" # helpful to keep this in sync with Wikimedia CI. https://phabricator.wikimedia.org/T343827
 # *************************************************************************
 
 # Workaround for error message "The repository at "/var/www/html/w/skins/Vector" does not have the correct ownership and git refuses to use it:" and "fatal: detected dubious ownership in repository at '/var/www/html/w/skins/Vector'"
@@ -400,7 +400,7 @@ chmod 0777 ~/mediawiki/cache
 # install extensions
 for extensionName in "${extensions[@]}"; do
   # get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
-  git config --global --add safe.directory /var/www/html/w/extensions/$extensionName
+  git config --global --add safe.directory "/var/www/html/w/extensions/$extensionName"
 
   cd ~/mediawiki/extensions || exit
   git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
@@ -446,7 +446,7 @@ done
 # install skins
 for skinName in "${skins[@]}"; do
   # get rid of "the repository does not have correct ownership" yellow warning in CLI when using git commands
-  git config --global --add safe.directory /var/www/html/w/skins/$skinName
+  git config --global --add safe.directory "/var/www/html/w/skins/$skinName"
 
   cd ~/mediawiki/skins || exit
   git clone -b $branch "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/skins/$skinName"
