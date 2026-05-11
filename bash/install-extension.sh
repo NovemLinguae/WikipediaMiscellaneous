@@ -23,6 +23,38 @@ cd "$HOME/mediawiki/extensions/$extensionName/.vscode" || exit
 touch settings.json
 printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
 
+# and .vscode/launch.json for step debugging
+cd "$HOME/mediawiki/extensions/$extensionName/.vscode" || exit
+cat > launch.json << EOF
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Listen for XDebug",
+			"type": "php",
+			"request": "launch",
+			"hostname": "0.0.0.0",
+			"port": 9003,
+			"pathMappings": {
+				"/var/www/html/w/extensions/${extensionName}": "\${workspaceFolder}",
+				"/var/www/html/w": "\${workspaceFolder}/../.."
+			}
+		},
+		{
+			"name": "Launch currently open script",
+			"type": "php",
+			"request": "launch",
+			"program": "\${file}",
+			"cwd": "\${fileDirname}",
+			"port": 9003
+		}
+	]
+}
+EOF
+
 # composer update
 docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
 

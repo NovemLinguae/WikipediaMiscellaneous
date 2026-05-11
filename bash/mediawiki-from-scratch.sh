@@ -352,6 +352,14 @@ extract( \$wgConfGlobals );
 // ***************** EXTENSIONS & SKINS ********************
 EOL
 
+# add VS Code config files settings.json and launch.json to .gitignore_global, if they are not already present
+if ! grep -q ".vscode/settings.json" ~/.gitignore_global; then
+  echo ".vscode/settings.json" >> ~/.gitignore_global
+fi
+if ! grep -q ".vscode/launch.json" ~/.gitignore_global; then
+  echo ".vscode/launch.json" >> ~/.gitignore_global
+fi
+
 # VS Code: create debugger configuration file that works in WSL. the hostname: "0.0.0.0" line is particularly important.
 mkdir ~/mediawiki/.vscode
 cat > ~/mediawiki/.vscode/launch.json << EOF
@@ -403,6 +411,35 @@ for extensionName in "${extensions[@]}"; do
   cd .vscode || exit
   touch settings.json
   printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
+  cat > launch.json << EOF
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Listen for XDebug",
+			"type": "php",
+			"request": "launch",
+			"hostname": "0.0.0.0",
+			"port": 9003,
+			"pathMappings": {
+				"/var/www/html/w/extensions/${extensionName}": "\${workspaceFolder}",
+				"/var/www/html/w": "\${workspaceFolder}/../.."
+			}
+		},
+		{
+			"name": "Launch currently open script",
+			"type": "php",
+			"request": "launch",
+			"program": "\${file}",
+			"cwd": "\${fileDirname}",
+			"port": 9003
+		}
+	]
+}
+EOF
   echo "wfLoadExtension( '$extensionName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
 done
 
@@ -420,6 +457,35 @@ for skinName in "${skins[@]}"; do
   cd .vscode || exit
   touch settings.json
   printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
+  cat > launch.json << EOF
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Listen for XDebug",
+			"type": "php",
+			"request": "launch",
+			"hostname": "0.0.0.0",
+			"port": 9003,
+			"pathMappings": {
+				"/var/www/html/w/extensions/${skinName}": "\${workspaceFolder}",
+				"/var/www/html/w": "\${workspaceFolder}/../.."
+			}
+		},
+		{
+			"name": "Launch currently open script",
+			"type": "php",
+			"request": "launch",
+			"program": "\${file}",
+			"cwd": "\${fileDirname}",
+			"port": 9003
+		}
+	]
+}
+EOF
   echo "wfLoadSkin( '$skinName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
 done
 
