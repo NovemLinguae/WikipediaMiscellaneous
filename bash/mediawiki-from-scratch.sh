@@ -5,8 +5,8 @@
 # This script assumes:
 #    - Docker, WSL/Ubuntu, MariaDB not SQLite, installation location of MediaWiki core is ~/mediawiki, VS Code
 #    - Wiki farm. Will create wiki #1 at /wiki/, /w/, and database my_database. Will create wiki #2 at /secondwiki/, /w2/, and database secondwiki. Wiki farms are useful for testing extensions like CentralAuth, SecurePoll's jump-url feature, etc.
-#    - You should have git and nvm installed. `sudo apt install git`, `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash`, close and reopen bash window, `nvm install 18`
-#    - Your Gerrit SSH key should be saved at ~/.ssh/id_ed25519
+#    - You should have git and nvm installed. `sudo apt install git`, `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash`, close and reopen bash window, `nvm install 24`
+#    - Your Gerrit SSH key should be saved at ~/.ssh/cloud.key
 
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
