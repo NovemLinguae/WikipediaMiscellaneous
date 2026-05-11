@@ -4,27 +4,40 @@
 cd ~/mediawiki || exit
 docker compose up -d
 
+# ask if installing an extension or skin. re-prompt if the user types anything besides that
+while true; do
+	echo "Are you installing an extension or a skin? Type 'extension' or 'skin'."
+	read -r extensionOrSkin
+	if [ "$extensionOrSkin" == "extension" ] || [ "$extensionOrSkin" == "skin" ]; then
+		break
+	else
+		echo "Invalid input. Please type 'extension' or 'skin'."
+	fi
+done
+
+extensionOrSkin="${extensionOrSkin}s"
+
 # collect extension name
-echo "What's the name of the extension? Capitalize it correctly please."
-read -r extensionName
+echo "What's the name of the extension/skin? Capitalize it correctly please."
+read -r repoName
 
 # git clone only?
-echo "Do you want this extension to work in your browser? y for full install, n to skip database updates and skip wfLoadExtension (but gerrit and linters will still work)"
+echo "Do you want this extension/skin to work in your browser? y for full install, n to skip database updates and skip wfLoadExtension (but gerrit and linters will still work)"
 read -r browser
 
 # git clone
-cd ~/mediawiki/extensions || exit
-git clone "ssh://novemlinguae@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
+cd ~/mediawiki/"$extensionOrSkin" || exit
+git clone "ssh://novemlinguae@gerrit.wikimedia.org:29418/mediawiki/$extensionOrSkin/$repoName"
 
 # make .vscode/settings.json file. so that when extension is open in IDE, intellisense loads type hints for objects from mediawiki core
-cd "$HOME/mediawiki/extensions/$extensionName" || exit
+cd "$HOME/mediawiki/$extensionOrSkin/$repoName" || exit
 mkdir .vscode
-cd "$HOME/mediawiki/extensions/$extensionName/.vscode" || exit
+cd "$HOME/mediawiki/$extensionOrSkin/$repoName/.vscode" || exit
 touch settings.json
 printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
 
 # and .vscode/launch.json for step debugging
-cd "$HOME/mediawiki/extensions/$extensionName/.vscode" || exit
+cd "$HOME/mediawiki/$extensionOrSkin/$repoName/.vscode" || exit
 cat > launch.json << EOF
 {
 	// Use IntelliSense to learn about possible attributes.
@@ -39,7 +52,7 @@ cat > launch.json << EOF
 			"hostname": "0.0.0.0",
 			"port": 9003,
 			"pathMappings": {
-				"/var/www/html/w/extensions/${extensionName}": "\${workspaceFolder}",
+				"/var/www/html/w/$extensionOrSkin/$repoName": "\${workspaceFolder}",
 				"/var/www/html/w": "\${workspaceFolder}/../.."
 			}
 		},
@@ -56,16 +69,21 @@ cat > launch.json << EOF
 EOF
 
 # composer update
-docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
+docker compose exec mediawiki composer update --working-dir "$extensionOrSkin/$repoName"
 
 # npm ci
-cd "$HOME/mediawiki/extensions/$extensionName" || exit
+cd "$HOME/mediawiki/$extensionOrSkin/$repoName" || exit
 npm ci
 
 if [ "$browser" == "y" ]; then
 	# add wfLoadExtension to LocalSettings.php
 	cd ~/mediawiki || exit
-	echo "wfLoadExtension( '$extensionName' );" >> LocalSettings.php
+	if [ "$extensionOrSkin" == "extensions" ]; then
+		wfLoadString="wfLoadExtension( '$repoName' );"
+	elif [ "$extensionOrSkin" == "skins" ]; then
+		wfLoadString="wfLoadSkin( '$repoName' );"
+	fi
+	echo "$wfLoadString" >> LocalSettings.php
 
 	# composer update for mediawiki core, so that the next step doesn't freak out
 	cd ~/mediawiki || exit
@@ -77,5 +95,5 @@ if [ "$browser" == "y" ]; then
 fi
 
 # open VS Code for this extension
-cd "$HOME/mediawiki/extensions/$extensionName" || exit
+cd "$HOME/mediawiki/$extensionOrSkin/$repoName" || exit
 code .
